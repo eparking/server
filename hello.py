@@ -1,7 +1,16 @@
 import os
+import wingbat 
+import json
 from flask import Flask
 
 app = Flask(__name__)
+
+
+
+x=wingbat.cRizzleNizPop(25,5,8)
+@app.route('/rgb/')
+def bob():
+	return json.dumps(x.serialize()) #wingbat.cRizzleNizPop(155,11,60)
 
 @app.route('/')
 def hello():
@@ -16,7 +25,7 @@ def colorMon(color_id):
 		else:
 			return 'yamon'
 
-@app.route('/color1/<int:red>-<int:green>-<int:blue>')
+@app.route('/cooco/<int:red>-<int:green>-<int:blue>')
 def RGB(red, green, blue):
     return str(red) + ", " + str(green) + ", " + str(blue)
 
