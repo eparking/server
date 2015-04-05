@@ -16,10 +16,20 @@ class RGBAPixel:
 				"green":self.green,
 				"blue":self.blue}
 
+class ParkingSpace:
+	def __init__(self,id,vacant):
+		self.id=id
+		self.vacant=vacant	
+	def serialize(self):
+		return {
+			"id":self.id,
+			"vacant":self.vacant
+		}
+
 arr=[]
 
 for i in range(0, 10):
-    arr.append(RGBAPixel(25*i, 25*i, 25*i))
+    arr.append(ParkingSpace(i, i%2==0))
 
 @app.route('/')
 def hello():
