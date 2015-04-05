@@ -6,11 +6,22 @@ from flask import Flask
 app = Flask(__name__)
 
 
+myArray = []
 
-x=wingbat.cRizzleNizPop(25,5,8)
+for i in range(0, 10):
+    myArray.append(wingbat.rgbObject(25*i, 25*i, 25*i))
+
+
 @app.route('/rgb/')
-def bob():
-	return json.dumps(x.serialize()) #wingbat.cRizzleNizPop(155,11,60)
+def printArray():
+    counter = 0
+    myString = ""
+    for myObject in myArray:
+        counter = counter+1
+        print myArray
+        myString = myString + json.dumps(myObject.serialize())
+    return myString
+
 
 @app.route('/')
 def hello():
@@ -32,4 +43,3 @@ def RGB(red, green, blue):
 if __name__=='__main__':
 	app.run(debug=True)
 
-	#sdkjjbd
