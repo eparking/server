@@ -62,14 +62,14 @@ def cocoo(red, green, blue):
 
 
 
-@app.route('/create/<int:red>-<int:green>-<int:blue>')
-def RGB(red, green,blue):
-	create_obj=RGBAPixel(red,green,blue)
+@app.route('/create/<int:id>-<string:vacant>')
+def RGB(id,vacant):
+	create_obj=ParkingSpace(id,vacant)
 	arr.append(create_obj)
 	return """<html>
 <body>
-Added color:
-"""+str(red)+", "+str(green)+", "+str(blue)+" at index "+str(len(arr)-1)+"""
+Added ParkingSpace:
+"""+"id: "+str(id)+", vacant: "+vacant+" at index "+str(len(arr)-1)+"""
 </body>
 </html>
 """
@@ -81,18 +81,17 @@ def read(num):
 	read_obj=arr[num]
 	return json.dumps(read_obj.serialize())
 
-@app.route('/update/<int:red>-<int:green>-<int:blue>-<int:num>')
-def update(red, green,blue,num):
+@app.route('/update/<int:id>-<string:vacant>-<int:num>')
+def update(id,vacant,num):
 	if(num>=len(arr)):
 		return "invalid index"
 	old_obj=arr[num]
-	old_obj.red=red
-	old_obj.green=green
-	old_obj.blue=blue
+	old_obj.id=id
+	old_obj.vacant=vacant
 	return """<html>
 <body>
-Updated color:
-"""+str(red)+", "+str(green)+", "+str(blue)+" at index "+str(num)+"""
+Updated:
+"""+" id: "+str(id)+", vacant: "+vacant+ " at index "+str(num)+"""
 </body>
 </html>
 """
