@@ -106,6 +106,13 @@ def delete(num):
 
 	return "asad"
 
+@app.route('/showArr')
+def show():
+    arrList = ""
+    for i in arr:
+        arrList += "id:" + arr[i].id + " Vacant:" + arr[i].vacant + ".........." 
+    return arrList
+
 
 if __name__=='__main__':
 	app.run(debug=True)
