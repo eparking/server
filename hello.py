@@ -87,7 +87,10 @@ def update(id,vacant,num):
 		return "invalid index"
 	old_obj=arr[num]
 	old_obj.id=id
-	old_obj.vacant=vacant
+	if vacant == 'True':
+		old_obj.vacant=True
+	elif vacant == 'False':
+		old_obj.vacant=False
 	return """<html>
 <body>
 Updated:
@@ -105,13 +108,6 @@ def delete(num):
 	arr.pop(num)
 
 	return "asad"
-
-@app.route('/showArr')
-def show():
-    arrList = ""
-    for i in arr:
-        arrList += "id:" + arr[i].id + " Vacant:" + arr[i].vacant + ".........." 
-    return arrList
 
 
 if __name__=='__main__':
