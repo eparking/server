@@ -1,6 +1,7 @@
 #!/venv/bin/python
 import os
 import json
+import sqlite3
 from flask import Flask
 
 print "hello"
@@ -115,6 +116,35 @@ def show():
     for i in arr:
         arrList += "id:" + arr[i].id + " Vacant:" + arr[i].vacant + ".........." 
     return arrList
+
+############################################
+#              Database Stuff              #
+
+#Sources: http://www.blog.pythonlibrary.org/2012/07/18/python-a-simple-step-by-step-sqlite-tutorial/
+#Sources: https://www.youtube.com/watch?v=n-Rtfd1Vv_M
+
+#Current Problem: when try to use route to add to db, "SQLite objects created in a thread can only be used in that same thread"
+conn = sqlite3.connect("mydatabase.db")
+cursor = conn.cursor()
+
+# create a table
+#Boolean values are stored as integers 0 (false) and 1 (true).
+#cursor.execute("""CREATE TABLE parkingspots
+#						time integer) 
+#				""")
+
+@app.route('/create_db/<int:id>-<string:vacant>-<string:location>-<int:time>')#create obj in db
+def makeSpot(id,vacant,location,time):
+	cursor.execute("INSERT INTO parkingspots VALUES (id, vacant, location, time)")
+	conn.commit()
+	return """<html>
+<body>
+Added ParkingSpace:
+"""+ "_" + "Nice try!" +"_" +"""
+</body>
+</html>
+"""
+
 
 
 if __name__=='__main__':
