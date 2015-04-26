@@ -3,9 +3,34 @@ import os
 import json
 import sqlite3
 from flask import Flask
+from flask.ext.sqlalchemy import SQLAlchemy
+import datetime
 
 print "hello"
 app = Flask(__name__)
+app.config.from_object('config')
+db = SQLAlchemy(app)
+
+#models.py file
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nickname = db.Column(db.String(64), index=True, unique=True)
+    email = db.Column(db.String(120), index=True, unique=True)
+    spots = db.relationship('Spot', backref='author', lazy='dynamic')
+
+    def __repr__(self):
+        return '<User %r>' % (self.nickname)
+
+class Spot(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    location = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime)
+    vacancy = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def __repr__(self):
+        return '<Spot %r>' % (self.location)
+#end models.py file
 
 class RGBAPixel:
 	def __init__(self,red,green,blue):
@@ -133,10 +158,25 @@ cursor = conn.cursor()
 #						time integer) 
 #				""")
 
-@app.route('/create_db/<int:id>-<string:vacant>-<string:location>-<int:time>')#create obj in db
+@app.route('/create_user/<string:n_name>-<string:e_mail>')#create obj in db
+def makeUser(n_name,e_mail):
+	u = User(nickname=n_name, email=e_mail)
+	db.session.add(u)
+	db.session.commit()
+	return """<html>
+<body>
+Added ParkingSpace:
+"""+ "_" + "User Added!" +"_" +"""
+</body>
+</html>
+"""
+
+@app.route('/create_db/<int:id>-<int:vacant>-<string:location>-<int:time>')#create obj in db
 def makeSpot(id,vacant,location,time):
-	cursor.execute("INSERT INTO parkingspots VALUES (id, vacant, location, time)")
-	conn.commit()
+	u = User.query.get(id)
+	p = Spot(location=location, timestamp=datetime.datetime.utcnow(), vacancy=vacant, author=u)
+	db.session.add(p)
+	db.session.commit()
 	return """<html>
 <body>
 Added ParkingSpace:

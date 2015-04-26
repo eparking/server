@@ -1,10 +1,47 @@
 import sqlite3
+import os
+import json
+import sqlite3
+from flask import g
+from flask import Flask
 
-def main(): 
-	conn = sqlite3.connect("mydatabase.db") # or use :memory: to put it in RAM
+DATABASE =  'Users\user\Documents\github\practice_db.db'
+
+app = Flask(__name__)
+app.config.from_object(__name__)
+
+def connect_db():
+	return sqlite3.connect(app.config['DATABASE'])
+
+@app.route('/test_db')
+def test():
+	g.db = connect_db()	
+	cur = g.db.execute('select id, time from pSpaces')
+	spaces = [dict(id=row[0], amount=row[1]) for row in cur.fetchall()]
+	g.db.close()
+	return spaces
+
+@app.route('/')
+def hello():
+	return 'Hello World!'
+
+#def main(): 
+	#conn = sqlite3.connect("mydatabase.db") # or use :memory: to put it in RAM
  
 	cursor = conn.cursor()
- 
+
+@app.route('/create_db/<int:id>-<string:vacant>-<string:location>-<int:time>')#create obj in db
+def makeSpot(id,vacant,location,time):
+	g.db.execute('INSERT INTO parkingspots VALUES (id, vacant, location, time') 
+	conn.commit()
+	return """<html>
+<body>
+Added ParkingSpace:
+"""+ "_" + "Nice try!" +"_" +"""
+</body>
+</html>
+"""
+
 # create a table
 #Boolean values are stored as integers 0 (false) and 1 (true).
 	cursor.execute("""CREATE TABLE parkingspots
@@ -46,5 +83,5 @@ def main():
 	for row in cursor:
 		print(row)
 
-	if __name__=='__main__':main()
-		#app.run(debug=True)
+if __name__=='__main__':
+	app.run(debug=True)
