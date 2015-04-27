@@ -6,6 +6,7 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 import datetime
 
+
 print "hello"
 app = Flask(__name__)
 app.config.from_object('config')
@@ -213,20 +214,20 @@ def viewlot():
 	spots=Spot.query.all()
 	for s in spots:
 		u = Spot.query.get(s.id)
-		lot+=('id: ')
+		lot+=('||Location ID: ')
 		lot+=(str(u.id))
+		lot+=('||')
 		lot+=('...Location: ')
 		lot+=(str(u.location))
-		lot+=('Vacancy: ')
+		lot+=('...Vacancy: ')
 		lot+=(str(u.vacancy))
-		lot+=('User-Id: ')
+		lot+=('...User-Id: ')
 		lot+=(str(u.user_id))
-		lot+=('Owner-Id: ')
+		lot+=('...Owner-Id: ')
 		lot+=(str(u.owner_id))
 
 	return """<html>
 <body>
-Added ParkingSpace:
 """+ "_" + lot +"_" +"""
 </body>
 </html>
