@@ -12,6 +12,7 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 
 #models.py file
+# User Properties: name, email, spots(relationship), id
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nickname = db.Column(db.String(64), index=True, unique=True)
@@ -21,11 +22,13 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % (self.nickname)
 
+# Spot Properties: location(string), timestamp(DateTime), vacancy(Integer), user's id(Integer), id (include time amount?)
 class Spot(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     location = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime)
     vacancy = db.Column(db.Integer)
+    owner_id = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
@@ -145,22 +148,14 @@ def show():
 ############################################
 #              Database Stuff              #
 
-#Sources: http://www.blog.pythonlibrary.org/2012/07/18/python-a-simple-step-by-step-sqlite-tutorial/
-#Sources: https://www.youtube.com/watch?v=n-Rtfd1Vv_M
-
-#Current Problem: when try to use route to add to db, "SQLite objects created in a thread can only be used in that same thread"
-conn = sqlite3.connect("mydatabase.db")
-cursor = conn.cursor()
-
-# create a table
-#Boolean values are stored as integers 0 (false) and 1 (true).
-#cursor.execute("""CREATE TABLE parkingspots
-#						time integer) 
-#				""")
+# Need to...
+# Add time to ?
+# check time/count down
+# View spots and their status (who has them, how much time)
 
 @app.route('/create_user/<string:n_name>-<string:e_mail>')#create obj in db
-def makeUser(n_name,e_mail):
-	u = User(nickname=n_name, email=e_mail)
+def createUser(n_name,e_mail):
+	u = User(nickname=n_name, email=e_mail) #send email when time is almost up?....change to phone number?
 	db.session.add(u)
 	db.session.commit()
 	return """<html>
@@ -170,17 +165,69 @@ Added ParkingSpace:
 </body>
 </html>
 """
-
-@app.route('/create_db/<int:id>-<int:vacant>-<string:location>-<int:time>')#create obj in db
-def makeSpot(id,vacant,location,time):
-	u = User.query.get(id)
-	p = Spot(location=location, timestamp=datetime.datetime.utcnow(), vacancy=vacant, author=u)
+@app.route('/create_spot/<int:owner>-<string:location>')
+def createSpot(owner,location):
+	p = Spot(owner_id=owner, location=location, timestamp=datetime.datetime.utcnow(), vacancy=0)
 	db.session.add(p)
 	db.session.commit()
 	return """<html>
 <body>
 Added ParkingSpace:
-"""+ "_" + "Nice try!" +"_" +"""
+"""+ "_" + "Spot Created!" +"_" +"""
+</body>
+</html>
+"""
+
+@app.route('/take_spot/<int:user_id>-<int:location_id>-<int:time>')
+def takeSpot(user_id,location_id,time):
+	user = User.query.get(user_id)
+	location = Spot.query.get(location_id)
+	location.timestamp = datetime.datetime.utcnow()
+	location.vacancy = 1
+	location.user_id = user.id
+	db.session.commit()
+	return """<html>
+<body>
+Added ParkingSpace:
+"""+ "_" + "Spot Taken!" +"_" +"""
+</body>
+</html>
+"""
+
+@app.route('/drop_spot/<int:location_id>')
+def dropSpot(location_id):
+	location = Spot.query.get(location_id)
+	location.vacancy = 0
+	db.session.commit()
+	return """<html>
+<body>
+Added ParkingSpace:
+"""+ "_" + "Spot dropped!" +"_" +"""
+</body>
+</html>
+"""
+
+@app.route('/view_lot/')
+def viewlot():
+	lot = ''
+	spots=Spot.query.all()
+	for s in spots:
+		u = Spot.query.get(s.id)
+		lot+=('id: ')
+		lot+=(str(u.id))
+		lot+=('...Location: ')
+		lot+=(str(u.location))
+		lot+=('Vacancy: ')
+		lot+=(str(u.vacancy))
+		lot+=('User-Id: ')
+		lot+=(str(u.user_id))
+		lot+=('Owner-Id: ')
+		lot+=(str(u.owner_id))
+
+	return """<html>
+<body>
+Added ParkingSpace:
+"""+ "_" + lot +"_" +"""
 </body>
 </html>
 """
