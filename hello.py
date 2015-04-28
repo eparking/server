@@ -199,6 +199,7 @@ Added ParkingSpace:
 def dropSpot(location_id):
 	location = Spot.query.get(location_id)
 	location.vacancy = 0
+	location.user_id = 0
 	db.session.commit()
 	return """<html>
 <body>
