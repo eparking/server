@@ -31,6 +31,7 @@ class Spot(db.Model):
     vacancy = db.Column(db.Integer)
     owner_id = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    time_left = db.Column(db.Integer)
 
     def __repr__(self):
         return '<Spot %r>' % (self.location)
@@ -161,7 +162,6 @@ def createUser(n_name,e_mail):
 	db.session.commit()
 	return """<html>
 <body>
-Added ParkingSpace:
 """+ "_" + "User Added!" +"_" +"""
 </body>
 </html>
@@ -173,7 +173,6 @@ def createSpot(owner,location):
 	db.session.commit()
 	return """<html>
 <body>
-Added ParkingSpace:
 """+ "_" + "Spot Created!" +"_" +"""
 </body>
 </html>
@@ -186,10 +185,10 @@ def takeSpot(user_id,location_id,time):
 	location.timestamp = datetime.datetime.utcnow()
 	location.vacancy = 1
 	location.user_id = user.id
+	location.time_left = time
 	db.session.commit()
 	return """<html>
 <body>
-Added ParkingSpace:
 """+ "_" + "Spot Taken!" +"_" +"""
 </body>
 </html>
@@ -203,7 +202,6 @@ def dropSpot(location_id):
 	db.session.commit()
 	return """<html>
 <body>
-Added ParkingSpace:
 """+ "_" + "Spot dropped!" +"_" +"""
 </body>
 </html>
