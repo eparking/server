@@ -33,6 +33,13 @@ class Spot(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     time_left = db.Column(db.Integer)
 
+    def serialize_spot(self):
+
+	return {
+		"id":self.id,
+		"vacant":self.vacancy
+		}
+
     def __repr__(self):
         return '<Spot %r>' % (self.location)
 #end models.py file
@@ -105,7 +112,7 @@ Added ParkingSpace:
 </html>
 """
 
-@app.route('/read/<int:num>')
+@app.route('/read_array/<int:num>')
 def read(num):
 	if (num>=len(arr)):
 			return "invalid index"
@@ -231,6 +238,44 @@ def viewlot():
 </body>
 </html>
 """
+################################################ serialize fix start
+def serialize_spot(self):
+
+	return {
+		"id":self.id,
+		"vacant":self.vacancy
+		}
+
+
+@app.route('/read/<int:spot_id>')
+def readSpot(spot_id):
+	read_spot = Spot.query.get(spot_id)
+
+	return json.dumps(read_spot.serialize_spot())
+
+
+
+
+
+# def serialize(self):
+# 		return {
+# 			"id":self.id,
+# 			"vacant":self.vacant
+# 		}
+
+# @app.route('/read/<int:num>')
+# def read(num):
+
+# 	read_obj=arr[num]
+# 	return json.dumps(read_obj.serialize())
+
+#############################################################serialize fix end
+@app.route('/_status', methods= ['GET',  'POST'])
+def get_temps():
+    db = get_db()
+    cur = db.execute('select sensor_name, temp from cur_temps ORDER BY sensor_name')
+    #cur_temps = cur.fetchall()
+    return jsonify(cur.fetchall())
 
 
 
